@@ -6,8 +6,8 @@
 // @author       Mohit Arora
 // @match        https://www.youtube.com/*
 // @icon         https://www.svgrepo.com/show/92784/youtube.svg
-// @updateURL   
-// @downloadURL 
+// @updateURL    https://github.com/Arora-Sir/Tampermonkey/blob/main/RoundedYoutube.js
+// @downloadURL  https://github.com/Arora-Sir/Tampermonkey/blob/main/RoundedYoutube.js
 // @grant        none
 // ==/UserScript==
 
