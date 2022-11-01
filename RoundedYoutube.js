@@ -3,12 +3,12 @@
 // @namespace    https://github.com/Arora-Sir
 // @version      0.32
 // @license      MIT
-// @description  round the Youtube video screen
+// @description  Round the Youtube watch video screen
 // @author       Mohit Arora
 // @match        https://www.youtube.com/watch*
 // @icon         https://www.svgrepo.com/show/92784/youtube.svg
-// @updateURL    https://github.com/Arora-Sir/Tampermonkey/blob/main/RoundedYoutube.js
-// @downloadURL  https://github.com/Arora-Sir/Tampermonkey/blob/main/RoundedYoutube.js
+// @updateURL   https://raw.githubusercontent.com/Arora-Sir/Tampermonkey/main/RoundedYoutube.js
+// @downloadURL  https://raw.githubusercontent.com/Arora-Sir/Tampermonkey/main/RoundedYoutube.js
 // @grant        none
 // ==/UserScript==
 
