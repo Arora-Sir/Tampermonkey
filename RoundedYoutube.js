@@ -2,6 +2,7 @@
 // @name         Rounded Youtube
 // @namespace    https://github.com/Arora-Sir
 // @version      0.32
+// @license      MIT
 // @description  round the Youtube video screen
 // @author       Mohit Arora
 // @match        https://www.youtube.com/watch*
