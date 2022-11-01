@@ -2,7 +2,7 @@
 // @name         Rounded Youtube
 // @namespace    https://github.com/Arora-Sir
 // @license      MIT
-// @version      0.2
+// @version      0.3
 // @description  Round the Youtube video watch screen
 // @author       Mohit Arora
 // @match        https://www.youtube.com/*
@@ -34,4 +34,5 @@
    //    console.log('element clicked');
    //         document.querySelector(".html5-video-player").style.borderRadius = "500px";
    // });
+    
 })();
