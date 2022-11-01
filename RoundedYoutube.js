@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rounded Youtube
 // @namespace    https://github.com/Arora-Sir
-// @version      0.1
+// @version      0.2
 // @description  round the Youtube video screen
 // @author       Mohit Arora
 // @match        https://www.youtube.com/*
