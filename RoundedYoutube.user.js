@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Rounded Youtube
 // @namespace    https://github.com/Arora-Sir
-// @version      0.33
+// @version      0.34
 // @license      MIT
 // @description  Round the Youtube watch video screen
 // @author       Mohit Arora
 // @match        https://www.youtube.com/watch*
 // @icon         https://www.svgrepo.com/show/92784/youtube.svg
-// @updateURL    https://raw.githubusercontent.com/Arora-Sir/Tampermonkey/main/RoundedYoutube.js
-// @downloadURL  https://raw.githubusercontent.com/Arora-Sir/Tampermonkey/main/RoundedYoutube.js
+// @updateURL    https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js
+// @downloadURL  https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js
 // @grant        none
 // ==/UserScript==
 
@@ -18,12 +18,10 @@
     
     if(OuterVideoPlayer!=null){
         OuterVideoPlayer.style.borderRadius = "15px";
-//             console.log('Not Null');
     }
     else{
         while (OuterVideoPlayer.style.borderRadius != "15px"){
             OuterVideoPlayer.style.borderRadius = "15px";
-//             console.log('Null');
         };
     }
 
@@ -36,9 +34,11 @@
             OuterVideoPlayer.style.borderRadius == "0px"
         }
     }
+    
    // const FullScreenButton = document.getElementsByClassName("ytp-fullscreen-button");
    // FullScreenButton.addEventListener('click', function handleClick() {
    //    console.log('element clicked');
    //         document.querySelector(".html5-video-player").style.borderRadius = "500px";
    // });
+    
 })();
