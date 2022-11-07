@@ -15,31 +15,32 @@
 
 (function() {
     'use strict';
-    var OuterVideoPlayer = document.querySelector(".html5-video-player");
-    
-    if(OuterVideoPlayer!=null){
-        OuterVideoPlayer.style.borderRadius = "15px";
-    }
-    else{
-        while (OuterVideoPlayer.style.borderRadius != "15px"){
-            OuterVideoPlayer.style.borderRadius = "15px";
-        };
+    let OuterVideoPlayer = document.querySelector(".html5-video-player");
+    let FullScreenButton = document.querySelector('[title="Full screen (f)"]');
+
+    // Removed the code as now script run at document end
+    //     if(OuterVideoPlayer!=null){
+    OuterVideoPlayer.style.borderRadius = "15px";
+    //     }
+    //     else{
+    //         while (OuterVideoPlayer.style.borderRadius != "15px"){
+    //             OuterVideoPlayer.style.borderRadius = "15px";
+    //         };
+    //     }
+
+    //When F is preessed or Left clicked on Full Screen Button
+    document.addEventListener("keydown", ButtonOrF_Pressed, false);
+    FullScreenButton.addEventListener("click", ButtonOrF_Pressed, false);
+
+    function ButtonOrF_Pressed(f) {
+        if(f.code == "KeyF" || event.button==0){
+            if(OuterVideoPlayer.style.borderRadius == "0px"){
+                OuterVideoPlayer.style.borderRadius = "15px";
+            }
+            else{
+                OuterVideoPlayer.style.borderRadius = "0px"
+            }
+        }
     }
 
-    document.addEventListener("keydown", checkKeyPressed, false);
-    function checkKeyPressed(f) {
-        if(OuterVideoPlayer.style.borderRadius == "0px"){
-             OuterVideoPlayer.style.borderRadius = "15px";
-        }
-        else{
-            OuterVideoPlayer.style.borderRadius == "0px"
-        }
-    }
-    
-   // const FullScreenButton = document.getElementsByClassName("ytp-fullscreen-button");
-   // FullScreenButton.addEventListener('click', function handleClick() {
-   //    console.log('element clicked');
-   //         document.querySelector(".html5-video-player").style.borderRadius = "500px";
-   // });
-    
 })();
