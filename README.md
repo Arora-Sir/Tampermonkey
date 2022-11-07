@@ -5,7 +5,7 @@ Chrome Tampermonkey extention scripts
 
 1. Make sure you have user scripts enabled (install Tampermonkey chrome extension) in your browser:
 
-	* [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)
+	* <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en"  target="_blank" > Tampermonkey</a> 
   
 2. Get information or install:
 	* Either Install a script directly from GitHub by clicking on the "install" link in the table below,
@@ -13,7 +13,7 @@ Chrome Tampermonkey extention scripts
   
   | Name     | Direct Install | Greasyfork | Last Updated | 
   | :---      |     :---:          |  :---:          | :---:          |
-  | Round Youtube Corners   | <a href="https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js"> Install</a>       | <a href="https://greasyfork.org/en/scripts/454081-rounded-youtube"> Install</a>          | 07-Nov-22         |
+  | Round Youtube Corners   | <a href="https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js"  target="_blank" > Install</a>       | <a href="https://greasyfork.org/en/scripts/454081-rounded-youtube"  target="_blank" > Install</a>          | 07-Nov-22         |
 
 
 ## Contributions
