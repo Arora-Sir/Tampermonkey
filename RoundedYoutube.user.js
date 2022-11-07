@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rounded Youtube
 // @namespace    https://github.com/Arora-Sir
-// @version      0.34
+// @version      0.35
 // @license      MIT
 // @description  Round the Youtube watch video screen
 // @author       Mohit Arora
