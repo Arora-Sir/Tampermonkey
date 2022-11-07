@@ -9,6 +9,7 @@
 // @icon         https://www.svgrepo.com/show/92784/youtube.svg
 // @updateURL    https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js
 // @downloadURL  https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js
+// @supportURL   https://github.com/Arora-Sir/Tampermonkey/issues
 // @grant        none
 // ==/UserScript==
 
