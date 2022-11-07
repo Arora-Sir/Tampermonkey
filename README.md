@@ -4,8 +4,8 @@ Chrome Tampermonkey extention scripts
 ## Installation
 
 1. Make sure you have user scripts enabled (install Tampermonkey chrome extension) in your browser:
-<!-- 	* [Tampermonkey]([http://stackoverflow.com](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)){:target="_blank"} -->
-	*  <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en"  target="_blank" > Tampermonkey</a> 
+	*  <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en"  target="_blank"> Tampermonkey</a> 
+	<!-- 	* [Tampermonkey]([http://stackoverflow.com](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)){:target="_blank"} -->
   
 2. Get information or install:
 	* Either Install a script directly from GitHub by clicking on the "install" link in the table below,
