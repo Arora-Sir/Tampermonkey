@@ -7,8 +7,9 @@ Chrome Tampermonkey extention scripts
 	*  <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en"  target="_blank"> Tampermonkey</a> 
 	<!-- 	* [Tampermonkey]([http://stackoverflow.com](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)){:target="_blank"} -->
   
-2. Get information or install:
-	* Either Install a script directly from GitHub by clicking on the "install" link in the table below,
+2. Install script:
+	* Either Install a
+	*  script directly from GitHub by clicking on the "install" link in the table below,
 	* Or Install a script from GreasyFork by clicking on the "install" link in GreasyFork column in the table below.<br><br>
   
 	  | Name     | Direct Install | Greasyfork | Last Updated | 
