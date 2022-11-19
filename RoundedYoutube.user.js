@@ -16,6 +16,23 @@
 
 (function() {
     'use strict';
+    
+    let OuterVideoPlayer = document.querySelector(".html5-video-player");
+    OuterVideoPlayer.style.borderRadius = "15px";
+
+    window.addEventListener('fullscreenchange', function() {
+        if (document.fullscreenElement) {
+            //console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
+            OuterVideoPlayer.style.borderRadius = "0px";
+        } else {
+            //console.log('Leaving fullscreen mode.');
+            OuterVideoPlayer.style.borderRadius = "15px";
+        }
+    }, true);
+
+
+    //Old Method Limitations: (Double click listner not added, not work sometimes!)
+    /*
     let OuterVideoPlayer = document.querySelector(".html5-video-player");
     let FullScreenButton = document.querySelector('[title="Full screen (f)"]');
 
@@ -43,5 +60,6 @@
             }
         }
     }
+*/
 
 })();
