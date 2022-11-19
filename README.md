@@ -25,4 +25,7 @@ If you would like to contribute to this repository, please...
 2. Make changes
 3. Create a pull request!
 
+## License
+[MIT LICENSE](LICENSE)
+
 <!-- Thanks to all that have [contributed](./AUTHORS) so far! -->
