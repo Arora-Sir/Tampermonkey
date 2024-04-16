@@ -154,6 +154,9 @@ function setEventListeners(evt) {
         //! Feature 4.3.5.1: Change Views & Date Color
         views_date[0].style.color = "#4CAF50"; // Views -> Green color
         views_date[2].style.color = "#2196F3"; // Date Uploaded -> Blue color
+        views_date[0].style.fontSize = "22px";
+        views_date[2].style.fontSize = "22px";
+        views_date[0].textContent += ",";
 
         //! Feature 4.3.5.2: Show Views & Date of Upload at right side of the Title
         let el = document.querySelector("yt-formatted-string.style-scope.ytd-watch-metadata");
@@ -170,7 +173,7 @@ function setEventListeners(evt) {
           span.style.textAlign = "center"; // Centers the text inside the span
 
           if (!isLastElement) {
-            span.textContent += ",";
+            //span.textContent += ",";
             span.style.marginRight = "8px";
           }
 
