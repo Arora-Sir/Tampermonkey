@@ -14,8 +14,10 @@ Chrome Tampermonkey extention scripts
 	  | Name     | Direct Install | Greasyfork | Last Updated | 
 	  | :---      |     :---:          |  :---:          | :---:          |
 	  | [Round Youtube Corners][rounded-YT]   | <a href="https://github.com/Arora-Sir/Tampermonkey/raw/main/RoundedYoutube.user.js"  target="_blank" > Install</a>       | <a href="https://greasyfork.org/en/scripts/454081-rounded-youtube"  target="_blank" > Install</a>          | 07-Nov-22         |
+   	  | [Youtube Enhancements][YT-Enhancements]   | <a href="https://github.com/Arora-Sir/Tampermonkey/raw/main/YoutubeEnhancements.js"  target="_blank" > Install</a>       |         | 16-Apr-24         |
 
 [rounded-YT]: https://github.com/Arora-Sir/Tampermonkey/wiki/Rounded-Youtube
+[YT-Enhancements]: https://github.com/Arora-Sir/Tampermonkey/wiki/Youtube-Enhancements
 
 ## Contributions
 
