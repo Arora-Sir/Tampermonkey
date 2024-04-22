@@ -24,14 +24,14 @@ function setEventListeners(evt) {
   function applyCustomStyles() {
     const styleElement = document.createElement("style");
     styleElement.textContent = `
-            .ytp-chrome-controls .ytp-button, .ytp-replay-button {
-                width: 45px;
-                padding: 0;
-            }
-            .ytp-efyt-button, #efyt-controls-button {
-                min-width: 45px;
-            }
-        `;
+          .ytp-chrome-controls .ytp-button, .ytp-replay-button {
+              width: 45px;
+              padding: 0;
+          }
+          .ytp-efyt-button, #efyt-controls-button {
+              min-width: 45px;
+          }
+      `;
     document.head.appendChild(styleElement);
   }
 
@@ -134,12 +134,12 @@ function setEventListeners(evt) {
       }
 
       /*
-      // Now By Default happens in Super Youtube Extension.
-      // Feature 4.3.2: Click more button by default & Expand
-      let infoMoreButton = document.querySelector('tp-yt-paper-button[id="expand"][class="button style-scope ytd-text-inline-expander"][role="button"]');
-      if (infoMoreButton) {
-          infoMoreButton.click();
-      }*/
+    // Now By Default happens in Super Youtube Extension.
+    // Feature 4.3.2: Click more button by default & Expand
+    let infoMoreButton = document.querySelector('tp-yt-paper-button[id="expand"][class="button style-scope ytd-text-inline-expander"][role="button"]');
+    if (infoMoreButton) {
+        infoMoreButton.click();
+    }*/
 
       //! Feature 4.3.4: Remove Hashtags from Info Tab
       let hashTags = document.querySelectorAll(".yt-simple-endpoint.bold.style-scope.yt-formatted-string");
@@ -162,8 +162,8 @@ function setEventListeners(evt) {
         let el = document.querySelector("yt-formatted-string.style-scope.ytd-watch-metadata");
         el.style.display = "flex"; // Ensure the container is styled as a flexbox
         el.style.flexDirection = "row"; // Ensures the content flows in a line from left to right
-        el.style.alignItems = "center";
-        el.style.justifyContent = "center"; // Centers the content horizontally
+        el.style.alignItems = "flex-start"; // Aligns items to the top of the container
+        el.style.justifyContent = "flex-end"; // Aligns the content to the right of the container
         el.style.flexWrap = "nowrap"; // Prevents wrapping
 
         function appendText(container, text, color, isLastElement) {
@@ -185,9 +185,12 @@ function setEventListeners(evt) {
 
         // Create spans for the views/date text.
         let firstElement = appendText(el, views_date[0].textContent, views_date[0].style.color, false);
-        firstElement.style.marginLeft = "auto"; // Pushes everything to the right of Title
+        //firstElement.style.marginLeft = "auto"; // Pushes everything to the right of Title
+        firstElement.style.marginLeft = "20px"; // Adds 20px space to the left of the first element
+        firstElement.style.whiteSpace = "nowrap"; // Prevents text from wrapping
         //appendText(el, "  ;  ", 'white');
-        appendText(el, views_date[2].textContent, views_date[2].style.color, true);
+        let lastElement = appendText(el, views_date[2].textContent, views_date[2].style.color, true);
+        lastElement.style.whiteSpace = "nowrap"; // Prevents text from wrapping
       }
 
       clearInterval(infoTabWait);
