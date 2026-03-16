@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Youtube Enhancements
 // @namespace    https://github.com/Arora-Sir
-// @version      2.0
+// @version      3.0
 // @license      MIT
-// @description  Youtube (Remove HashTags, Button Size, Margin Set, Color Elements, Remove Scrollbar, Round Corners Watch Video)
+// @description  Youtube UI Enhancer (adds views/date beside title, compact player buttons, improves description readability, adjusts layout spacing, and applies rounded corners to the video player).
 // @author       Mohit Arora
 // @match        *://*.youtube.com/*
 // @exclude      *://music.youtube.com/*
@@ -16,221 +16,279 @@
 // @run-at       document-start
 // ==/UserScript==
 
-function setEventListeners(evt) {
-  let initializationCheckTimer;
-  let infoTabWait;
+(function () {
+  "use strict";
 
-  //! Feature 1: Watch Video Bottom Buttons size decreases to show more buttons at a time
+  // Configuration for Easy Tweaking
+  const INFO_FONT_SIZE_PX = 20;
+  const INFO_GAP_PX = 20;
+  const PLAYER_BORDER_RADIUS_PX = 15;
+  const CONTROL_BUTTON_WIDTH_PX = 45;
+
+  // Lightweight helpers
+  function debounce(fn, ms = 80) {
+    let t;
+    return (...a) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...a), ms);
+    };
+  }
+
   function applyCustomStyles() {
+    if (document.getElementById("yt-enhance-style-simple")) return;
+
     const styleElement = document.createElement("style");
+    styleElement.id = "yt-enhance-style-simple";
+
     styleElement.textContent = `
-          .ytp-chrome-controls .ytp-button, .ytp-replay-button {
-              width: 45px;
-              padding: 0;
-          }
-          .ytp-efyt-button, #efyt-controls-button {
-              min-width: 45px;
-          }
-      `;
+            /* //! Feature 1: Watch Video Bottom Buttons size decreases to show more buttons at a time */
+            .ytp-chrome-controls .ytp-button:not(.ytp-chapter-title), .ytp-replay-button {
+                width: ${CONTROL_BUTTON_WIDTH_PX}px !important;
+                padding: 0 !important;
+            }
+            .ytp-efyt-button, #efyt-controls-button {
+                min-width: ${CONTROL_BUTTON_WIDTH_PX}px !important;
+            }
+            .ytp-chapter-title {
+                width: auto !important;
+                max-width: none !important;
+            }
+
+            /* //! Feature 3: Align Discription Elements Properly */
+            #above-the-fold { margin-top: 0px !important; }
+            #top-row { margin-top: -2px !important; }
+
+            /* //! Feature 4.2 & 4.3.3: Increase Info Tab Description text size */
+            #description-inline-expander, #description-inline-expander span, #description-inline-expander yt-formatted-string {
+                font-size: 18px !important;
+                line-height: 1.6 !important;
+            }
+
+            /* //! Feature 4.3.5: Change VIews & Date Color, and then Add these two with Title (Visual Layout) */
+            #title.ytd-watch-metadata {
+                display: flex !important;
+                align-items: center !important;
+            }
+            #title.ytd-watch-metadata h1 {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                font-size: 20px !important;
+                margin: 0 !important;
+            }
+            .yt-enhanced-info {
+                flex: 0 0 auto !important;
+                margin-left: ${INFO_GAP_PX}px !important;
+                text-align: right !important;
+                font-size: ${INFO_FONT_SIZE_PX}px !important;
+                font-weight: 600 !important;
+                white-space: nowrap !important;
+                pointer-events: none !important;
+                user-select: none !important;
+                opacity: 0.98;
+            }
+            /* Views -> Green color */
+            .yt-enhanced-info .yt-views { color: #4CAF50 !important; margin-right: 6px !important; }
+            /* Date Uploaded -> Blue color */
+            .yt-enhanced-info .yt-date { color: #2196F3 !important; }
+            .yt-enhanced-info[aria-hidden="true"] { outline: none !important; }
+        `;
     document.head.appendChild(styleElement);
   }
 
-  function checkForJS_Initialization() {
-    try {
-      //! Feature 1: Video Bottom Buttons size decreases to show more buttons at a time
-      // Check for the presence of video controls to apply custom styles
-      if (document.querySelector(".ytp-chrome-controls")) {
-        applyCustomStyles();
-      }
-
-      //! Feature 2: Remove Hashtags
-      let hashTags = document.querySelectorAll(".yt-simple-endpoint.bold.style-scope.yt-formatted-string");
-      for (let i = 0; i < hashTags.length; i++) {
-        let hashTag = hashTags[i];
-        hashTag.parentNode.removeChild(hashTag);
-      }
-
-      //! Feature 3: Align Discription Elements Properly
-      document.getElementById("bottom-row").style.marginTop = "-10px";
-      document.getElementById("description-inner").style.margin = "10px 0px";
-
-      //! Feature 4: Info Tab needful changes
-      infoTabWait = setInterval(waitForInfoTabToAppear, 50);
-
-      clearInterval(initializationCheckTimer);
-    } catch (error) {
-      //console.log("[Remove_YT_Hashtags]: " + error.message);
-      return;
+  //! Feature 4: Info Tab needful changes (Helper functions to extract data)
+  function findInfoElement() {
+    const selectors = [
+      "ytd-watch-info-text #info",
+      "#ytd-watch-info-text #info",
+      ".ytd-watch-info-text #info",
+      "#ytd-watch-info-text",
+      "ytd-watch-info-text",
+      "#info",
+    ];
+    for (const s of selectors) {
+      const el = document.querySelector(s);
+      if (el) return el;
     }
+    return null;
   }
 
-  //! Feature 4: Info Tab needful changes
-  function waitForInfoTabToAppear() {
-    //Todo: (SUPER YOUTUBE EXTENSION) :: REMOVE THIS FUNTIONALITY IF NOT USING SUPER YOUTUBE EXTENSION!
-    //! Feature 4.1: Disable scrolling on Watch video page (As everything is in single view because of Super Youtube Extension, scrolling is unncessary)
-    if (window.location.href.includes("https://www.youtube.com/watch")) {
-      document.body.style.overflow = "hidden";
+  function findWatchTitleContainer() {
+    const candidates = document.querySelectorAll("#title");
+    for (const c of candidates) {
+      if (c.closest && (c.closest("ytd-watch-metadata") || c.closest("#above-the-fold"))) {
+        return c;
+      }
     }
+    return document.querySelector("#title");
+  }
 
-    //! Feature 4.2: Increase Views & Years Ago Text Size to see it clearly
-    //Cut Info from bottom to right side of tab
-    let ViewsText = document.querySelectorAll(".style-scope.ytd-watch-info-text");
-    for (let i = 0; i < ViewsText.length; i++) {
-      ViewsText[i].style.fontSize = "17px";
-    }
-
-    //! Feature 4.3: Remove Monica Extension from Youtube to set margins!!
-    let monicaVideoSummary = document.getElementById("monica-video-summary");
-    if (monicaVideoSummary) {
-      monicaVideoSummary.remove();
-    }
-
-    //Todo: (SUPER YOUTUBE EXTENSION) :: REMOVE THIS FUNTIONALITY IF NOT USING SUPER YOUTUBE EXTENSION!
-    //!Feature 4.3: Margin Corrections for Super Youtube Extension
-    let tabInfo = document.getElementById("tab-info");
-    let descriptionInlineExpander = document.getElementById("description-inline-expander");
-
-    if (descriptionInlineExpander && tabInfo) {
-      //! Feature 4.3.1 : Margin Corrections for Super Youtube Extension
-      tabInfo.style.margin = "10px"; //Info,Comment & Video Margin corrections
-      tabInfo.style.marginBottom = "auto"; //Info,Comment & Video Margin corrections
-      let tabComments = document.getElementById("tab-comments");
-      let tabVideos = document.getElementById("tab-videos");
-      if (tabComments && tabVideos) {
-        tabComments.style.margin = "-40px 10px"; //Comment,Videos Margin corrections
-        tabVideos.style.margin = "60px 10px"; //Videos Margin corrections
+  function extractViewsDate(infoEl) {
+    if (!infoEl) return { views: "", date: "" };
+    try {
+      const spans = Array.from(infoEl.querySelectorAll("span"))
+        .map((s) => s.innerText.trim())
+        .filter(Boolean);
+      if (spans.length >= 1) {
+        const views = spans[0] || "";
+        const dateCandidate =
+          spans.find((s) => /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|\bago\b|years?|months?|days?)\b/i.test(s)) ||
+          spans[spans.length - 1] ||
+          "";
+        return { views, date: dateCandidate };
       }
+    } catch (e) {}
 
-      //! Feature 4.3.2: Info Tab Description Margin LEFT , RIGHT & BOTTOM Set
-      descriptionInlineExpander.style.paddingTop = "10px";
-      let descriptionInner = document.getElementById("description-inner");
-      if (descriptionInner) {
-        let currentMarginLeft = descriptionInner.style.marginLeft; // Get the current left margin
-        let currentMarginLeftValue = parseInt(currentMarginLeft, 10); // Convert the current margin to a number (assuming it's in pixels)
-        let additionalMarginLeft = 2; // Define how much you want to shift to the right, e.g., 10 pixels
-        descriptionInner.style.marginLeft = currentMarginLeftValue + additionalMarginLeft + "px"; // Set the new left margin
+    const txt = (infoEl.innerText || "").replace(/\n+/g, " ").trim();
+    const viewsMatch = txt.match(/[\d,.\s]+views/i);
+    const dateMatch =
+      txt.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^\d]{0,3}\s*\d{1,2}(?:,?\s*\d{4})?/) ||
+      txt.match(/\b\d+\s+(?:years?|months?|days?)\s+ago/i);
 
-        let currentMarginRight = descriptionInner.style.marginRight; // Get the current right margin
-        let currentMarginRightValue = parseInt(currentMarginRight, 10); // Convert the current margin to a number (assuming it's in pixels)
-        let additionalMarginRight = 2; // Define how much you want to shift to the left, e.g., 10 pixels
-        descriptionInner.style.marginRight = currentMarginRightValue + additionalMarginRight + "px"; // Set the new right margin
-      }
+    return { views: viewsMatch ? viewsMatch[0].trim() : "", date: dateMatch ? dateMatch[0].trim() : "" };
+  }
 
-      let bottomLinksAfterShowMore = document.querySelector("#description.ytd-structured-description-playlist-lockup-renderer");
-      if (bottomLinksAfterShowMore) {
-        bottomLinksAfterShowMore.style.marginBottom = "20px";
-      }
+  //! Feature 4.3.5: Change VIews & Date Color, and then Add these two with Title
+  const refreshEnhancedInfo = debounce(() => {
+    try {
+      const titleContainer = findWatchTitleContainer();
+      const infoEl = findInfoElement();
+      if (!titleContainer || !infoEl) return;
 
-      //! Feature 4.3.2: Remove Visible Scroller
-      //tabInfo.style.scrollbarColor = 'transparent transparent'; // Transparent, but this will show only Scrollbar borders
-      tabInfo.style.scrollbarWidth = "none"; //Completely Hide the Scrollbar
-      tabComments.style.scrollbarWidth = "none";
-      tabVideos.style.scrollbarWidth = "none";
+      const { views, date } = extractViewsDate(infoEl);
+      if (!views && !date) return;
 
-      //! Feature 4.3.3: Increase Info Tab Description text size
-      let InfoTextElements = document.querySelectorAll(".style-scope.ytd-text-inline-expander");
-      for (let i = 0; i < InfoTextElements.length; i++) {
-        InfoTextElements[i].style.fontSize = "16px";
-      }
+      let enhanced = titleContainer.querySelector(".yt-enhanced-info");
 
-      /*
-    // Now By Default happens in Super Youtube Extension.
-    // Feature 4.3.2: Click more button by default & Expand
-    let infoMoreButton = document.querySelector('tp-yt-paper-button[id="expand"][class="button style-scope ytd-text-inline-expander"][role="button"]');
-    if (infoMoreButton) {
-        infoMoreButton.click();
-    }*/
+      //! Feature 4.3.5.2: Show Views & Date of Upload at right side of the Title
+      if (!enhanced) {
+        enhanced = document.createElement("div");
+        enhanced.className = "yt-enhanced-info";
+        enhanced.setAttribute("aria-hidden", "true");
 
-      //! Feature 4.3.4: Remove Hashtags from Info Tab
-      let hashTags = document.querySelectorAll(".yt-simple-endpoint.bold.style-scope.yt-formatted-string");
-      for (let i = 0; i < hashTags.length; i++) {
-        let hashTag = hashTags[i];
-        hashTag.parentNode.removeChild(hashTag);
-      }
+        const sViews = document.createElement("span");
+        sViews.className = "yt-views";
+        const sSep = document.createElement("span");
+        sSep.textContent = "";
+        const sDate = document.createElement("span");
+        sDate.className = "yt-date";
 
-      //! Feature 4.3.5: Change VIews & Date Color, and then Add these two with Title
-      let views_date = document.querySelectorAll(".yt-formatted-string.bold");
-      if (views_date.length >= 2) {
-        //! Feature 4.3.5.1: Change Views & Date Color
-        views_date[0].style.color = "#4CAF50"; // Views -> Green color
-        views_date[2].style.color = "#2196F3"; // Date Uploaded -> Blue color
-        views_date[0].style.fontSize = "22px";
-        views_date[2].style.fontSize = "22px";
-        views_date[0].textContent += ",";
+        sViews.textContent = views || "";
+        sDate.textContent = date || "";
 
-        //! Feature 4.3.5.2: Show Views & Date of Upload at right side of the Title
-        let el = document.querySelector("yt-formatted-string.style-scope.ytd-watch-metadata");
-        el.style.display = "flex"; // Ensure the container is styled as a flexbox
-        el.style.flexDirection = "row"; // Ensures the content flows in a line from left to right
-        el.style.alignItems = "flex-start"; // Aligns items to the top of the container
-        el.style.justifyContent = "flex-end"; // Aligns the content to the right of the container
-        el.style.flexWrap = "nowrap"; // Prevents wrapping
+        enhanced.appendChild(sViews);
+        enhanced.appendChild(sSep);
+        enhanced.appendChild(sDate);
 
-        function appendText(container, text, color, isLastElement) {
-          // Function to append text with specific color to an element
-          let span = document.createElement("span");
-          span.textContent = text;
-          span.style.textAlign = "center"; // Centers the text inside the span
-
-          if (!isLastElement) {
-            //span.textContent += ",";
-            span.style.marginRight = "8px";
-          }
-
-          span.style.color = color || "inherit"; // Inherits the color if not specified
-          //span.style.marginLeft = 'auto'; // Centers the span horizontally
-          container.appendChild(span);
-          return span; // Return the span in case we need to reference it
+        const h1 = titleContainer.querySelector("h1");
+        if (h1 && h1.parentNode === titleContainer) {
+          if (h1.nextSibling) titleContainer.insertBefore(enhanced, h1.nextSibling);
+          else titleContainer.appendChild(enhanced);
+        } else {
+          titleContainer.appendChild(enhanced);
         }
-
-        // Create spans for the views/date text.
-        let firstElement = appendText(el, views_date[0].textContent, views_date[0].style.color, false);
-        //firstElement.style.marginLeft = "auto"; // Pushes everything to the right of Title
-        firstElement.style.marginLeft = "20px"; // Adds 20px space to the left of the first element
-        firstElement.style.whiteSpace = "nowrap"; // Prevents text from wrapping
-        //appendText(el, "  ;  ", 'white');
-        let lastElement = appendText(el, views_date[2].textContent, views_date[2].style.color, true);
-        lastElement.style.whiteSpace = "nowrap"; // Prevents text from wrapping
+      } else {
+        const sViews = enhanced.querySelector(".yt-views");
+        const sDate = enhanced.querySelector(".yt-date");
+        if (sViews) sViews.textContent = views || "";
+        if (sDate) sDate.textContent = date || "";
       }
 
-      clearInterval(infoTabWait);
-    }
+      //Todo: (SUPER YOUTUBE EXTENSION) :: REMOVE THIS FUNTIONALITY IF NOT USING SUPER YOUTUBE EXTENSION!
+      /*
+            //! Feature 4.1: Disable scrolling on Watch video page
+            if (window.location.href.includes("https://www.youtube.com/watch")) {
+                document.body.style.overflow = "hidden";
+            }
+            
+            //! Feature 4.3: Remove Monica Extension from Youtube to set margins!!
+            let monicaVideoSummary = document.getElementById("monica-video-summary");
+            if (monicaVideoSummary) monicaVideoSummary.remove();
+
+            //! Feature 4.3.4 & Feature 2: Remove Hashtags
+            document.querySelectorAll('a[href^="/hashtag/"]').forEach(element => {
+                element.parentNode.removeChild(element);
+            });
+            */
+    } catch (err) {}
+  }, 90);
+
+  // Dynamic Listeners for Info Tab (Replaces the old setInterval waitForInfoTab)
+  let infoObserver = null;
+  let titleObserver = null;
+  function attachObservers() {
+    try {
+      const infoEl = findInfoElement();
+      if (infoEl) {
+        if (infoObserver) infoObserver.disconnect();
+        infoObserver = new MutationObserver(() => refreshEnhancedInfo());
+        infoObserver.observe(infoEl, { childList: true, subtree: true, characterData: true });
+      }
+    } catch (e) {}
+
+    try {
+      const titleContainer = findWatchTitleContainer();
+      if (titleContainer) {
+        if (titleObserver) titleObserver.disconnect();
+        titleObserver = new MutationObserver(() => refreshEnhancedInfo());
+        titleObserver.observe(titleContainer, { childList: true, subtree: true, characterData: true });
+      }
+    } catch (e) {}
   }
 
-  initializationCheckTimer = setInterval(checkForJS_Initialization, 500);
-}
+  //! Feature 5: Round Corners Watch Video
+  function setYTRoundCorners() {
+    let checkForRoundYT_TimerCheck = setInterval(() => {
+      let OuterVideoPlayer = document.querySelector(".html5-video-player") || document.querySelector("#container.ytd-player > div");
+      if (!OuterVideoPlayer) return;
 
-//! Feature 5: Video Bottom Buttons size decreases to show more buttons at a time
-function setYTRoundCorners(evt) {
-  let checkForRoundYT_TimerCheck;
-  function checkForRoundYT() {
-    try {
-      let OuterVideoPlayer = document.querySelector(".html5-video-player") ?? document.querySelector("#container.ytd-player > div");
-      OuterVideoPlayer.style.borderRadius = "15px"; //Initial State
+      OuterVideoPlayer.style.borderRadius = PLAYER_BORDER_RADIUS_PX + "px"; //Initial State
+
       document.addEventListener(
         "fullscreenchange",
         function () {
           if (document.fullscreenElement) {
-            //console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
             OuterVideoPlayer.style.borderRadius = "0px";
           } else {
-            //console.log('Leaving fullscreen mode.');
-            OuterVideoPlayer.style.borderRadius = "15px";
+            OuterVideoPlayer.style.borderRadius = PLAYER_BORDER_RADIUS_PX + "px";
           }
         },
-        true
+        true,
       );
-    } catch (error) {
-      //console.log("[RoundedYoutube]: " + error.message);
-      return;
-    }
-    clearInterval(checkForRoundYT_TimerCheck);
-  }
-  checkForRoundYT_TimerCheck = setInterval(checkForRoundYT, 100);
-}
 
-(function () {
-  "use strict";
-  setYTRoundCorners();
-  window.addEventListener("yt-navigate-finish", setEventListeners, true);
+      clearInterval(checkForRoundYT_TimerCheck);
+    }, 120);
+  }
+
+  // Main Initialization Flow
+  function setEventListeners() {
+    applyCustomStyles();
+    refreshEnhancedInfo();
+    attachObservers();
+    setYTRoundCorners();
+  }
+
+  setEventListeners();
+
+  // Fallback Poller for YouTube's Dynamic Page Loads
+  const poller = setInterval(() => {
+    if (document.querySelector("#above-the-fold") || document.querySelector("#title")) {
+      setEventListeners();
+      clearInterval(poller);
+    } else {
+      applyCustomStyles(); // Keep ensuring CSS is there
+    }
+  }, 350);
+
+  window.addEventListener(
+    "yt-navigate-finish",
+    () => {
+      setTimeout(() => {
+        setEventListeners();
+      }, 220);
+    },
+    true,
+  );
 })();
